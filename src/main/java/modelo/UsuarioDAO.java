@@ -5,13 +5,14 @@
  */
 package modelo;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 /**
  *
- * @author dixego
+ * @author Juanitobanana
  */
 public class UsuarioDAO {
     SessionFactory sf;
@@ -35,5 +36,28 @@ public class UsuarioDAO {
             s.close();
         }
     }
-    
+        
+    public Usuario buscar(String id, String psswd) {
+        Session s = sf.openSession();
+        Transaction tx = null;
+        Usuario result = null;
+        
+        try {
+            tx = s.beginTransaction();
+            result = (Usuario) s.get(Usuario.class, id);
+            
+            if(!result.getContrasena().equals(psswd)) {
+                result = null;
+            }
+            
+            tx.commit();
+        } catch (Exception ex) {
+            if(tx != null)
+                tx.rollback();
+            ex.printStackTrace();
+        } finally {
+            s.close();
+        }
+        return result;
+    }     
 }
